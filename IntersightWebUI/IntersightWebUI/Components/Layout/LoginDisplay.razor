@@ -1,0 +1,94 @@
+﻿@using System.ComponentModel.DataAnnotations
+@using IntersightWebUI.Components.Account
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@using IntersightWebUI.Data
+@using Microsoft.AspNetCore.Http
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.Extensions.Logging
+@using System.Text.Json
+
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+
+
+<AuthorizeView>
+    <Authorized>
+        Hello, @context.User.Identity.Name!
+        <a href="MicrosoftIdentity/Account/SignOut">Sign Out</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="MicrosoftIdentity/Account/SignIn">Sign sIn</a>
+    </NotAuthorized>
+</AuthorizeView>
+
+
+
+
+
+<PageTitle>Log in</PageTitle>
+
+<a href="MicrosoftIdentity/Account/SignIn">Sign Ins</a>
+<a href="">Sign Up </a>
+<div class="row">
+    <EditForm Model="input" OnValidSubmit="SignUpUser" FormName="TenantDetails">
+        <InputText TValue="text" @bind-Value="input.tenantId" class="form-control" aria-required="true" />
+        <button type="submit">Submit</button>
+    </EditForm>
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Input input { get; set; } = new Input();
+    private HttpClient client;
+
+
+
+    protected override void OnInitialized()
+    {
+        client = new HttpClient();
+
+    }
+
+    public async Task SignUpUser()
+    {
+        string clientId = "4334e219-b546-4ad2-91b9-6fcceb14ffe0";
+        var redirectUri = "https://localhost:7197/signin-oidc";
+        var state = "state";
+
+        var url = $"https://login.microsoftonline.com/{input.tenantId}/adminconsent?client_id={clientId}&redirect_url={Uri.EscapeDataString(redirectUri)}&state={state}";
+
+        var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7120/Authorization/Exist/{input.tenantId}");
+        var response = client.Send(request).Content.ReadAsStringAsync().Result;
+
+        if (response.ToString() == "true")
+        {
+            NavigationManager.NavigateTo("MicrosoftIdentity/Account/SignIn", true);
+        }
+        else
+        {
+            var newRequest = new HttpRequestMessage(HttpMethod.Post, $"https://localhost:7120/Authorization");
+            var requestBody = new
+            {
+                content= input.tenantId,
+                id = Guid.NewGuid()
+            };
+            var content = new StringContent(JsonSerializer.Serialize(requestBody), System.Text.Encoding.UTF8, "application/json");
+            newRequest.Content = content;
+            var newResponse = client.Send(newRequest);
+
+            if(newResponse.IsSuccessStatusCode)
+                NavigationManager.NavigateTo(url, true);
+
+            
+        }
+
+    }
+
+    private class Input
+    {
+        [Required]
+        public string tenantId { get; set; } = "";
+    }
+}

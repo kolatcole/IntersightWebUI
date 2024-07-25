@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>aspnet-IntersightWebUI-2ab93b62-664d-4f95-9074-428653f05ed2</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Componentss\**" />
+    <Content Remove="Componentss\**" />
+    <EmbeddedResource Remove="Componentss\**" />
+    <None Remove="Componentss\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\IntersightWebUI.Client\IntersightWebUI.Client.csproj" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.0" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components" Version="4.9.3" />
+    <PackageReference Include="Microsoft.FluentUI.AspNetCore.Components.Icons" Version="4.9.3" />
+    <PackageReference Include="Microsoft.Identity.Web" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" Version="3.0.1" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" Version="3.0.1" />
+  </ItemGroup>
+
+</Project>

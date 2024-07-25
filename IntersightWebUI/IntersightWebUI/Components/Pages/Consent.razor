@@ -1,0 +1,58 @@
+﻿@* @page "/signin-oidc" *@
+@using Microsoft.Extensions.Logging
+@inject NavigationManager NavigationManager
+@attribute [AllowAnonymous]
+
+<h2>Admin Consent Callback</h2>
+
+@if (IsConsentGranted)
+{
+    <div class="alert alert-success" role="alert">
+        <h4 class="alert-heading">Admin Consent Granted!</h4>
+        <p>The admin consent has been successfully granted for tenant: @TenantId</p>
+        <hr>
+        <p class="mb-0">You can now use the application with the granted permissions.</p>
+    </div>
+}
+else
+{
+    <div class="alert alert-danger" role="alert">
+        <h4 class="alert-heading">Admin Consent Not Granted</h4>
+        <p>There was an issue with granting admin consent for tenant: @TenantId</p>
+        <hr>
+        <p class="mb-0">Please try again or contact support if the issue persists.</p>
+    </div>
+}
+
+<a href="/" class="btn btn-primary">Return to Home</a>
+
+@code {
+    [Parameter]
+    public string TenantId { get; set; }
+
+    [Parameter]
+    public bool IsConsentGranted { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var uri = new Uri(NavigationManager.Uri);
+        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+
+        var admin_consent = query["admin_consent"];
+        TenantId = query["tenant"];
+
+        IsConsentGranted = admin_consent == "True";
+
+        if (IsConsentGranted)
+        {
+           
+            Console.WriteLine($"Admin consent granted for tenant: {TenantId}");
+            // Here you can add logic to provision resources for the new tenant
+            // For example, create a service principal, set up database, etc.
+        }
+        else
+        {
+            Console.WriteLine($"Admin consent not granted for tenant: {TenantId}");
+        }
+    }
+}

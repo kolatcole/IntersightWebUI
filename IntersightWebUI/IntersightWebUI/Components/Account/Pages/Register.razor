@@ -1,0 +1,48 @@
+﻿@page "/Register"
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.AspNetCore.Authentication
+@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Identity
+@using IntersightWebUI.Data
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Extensions.Logging
+
+
+@inject ILogger<Login> Logger
+@inject NavigationManager NavigationManager
+@inject IdentityRedirectManager RedirectManager
+@attribute [AllowAnonymous]
+
+<PageTitle>Log in</PageTitle>
+
+<a href="MicrosoftIdentity/Account/SignIn">Sign Ins</a>
+<a href="">Sign Up </a>
+<div class="row">
+    <EditForm Model="input" OnValidSubmit="SignUpUser" FormName="TenantDetails">
+        <InputText TValue="text" @bind-Value="input.tenantId" class="form-control" aria-required="true" />
+        <button type="submit">Submit</button>
+    </EditForm>
+
+</div>
+
+@code {
+    [SupplyParameterFromForm]
+    private Input input { get; set; } = new Input();
+    protected override void OnInitialized()
+    {
+
+    }
+
+    public async Task SignUpUser()
+    {
+        string clientId = "4334e219-b546-4ad2-91b9-6fcceb14ffe0";
+        var url = $"https://login.microsoftonline.com/{input.tenantId}/adminconsent?client_id={clientId}";
+        NavigationManager.NavigateTo(url, true);
+    }
+
+    private class Input
+    {
+        [Required]
+        public string tenantId { get; set; } = "";
+    }
+}

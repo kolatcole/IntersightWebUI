@@ -1,0 +1,64 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.FluentUI.AspNetCore.Components
+@using Microsoft.FluentUI.AspNetCore.Components.Extensions
+@inject NavigationManager NavigationManager
+
+<PageTitle>Home</PageTitle>
+
+
+
+
+
+
+
+@* @code {
+    private List<Opportunity> Opportunities = new List<Opportunity>
+    {
+        new Opportunity 
+        { 
+            Name = "Gro Intelligence", 
+            Description = "The AI-powered decision engine across agriculture, climate, and the economy",
+            //Icon = new Icons.Regular.Size24.Leaf(),
+            Details = new List<OpportunityDetail> 
+            { 
+                new OpportunityDetail { Stage = "Discovery", Amount = 10000, CloseDate = new DateTime(2024, 5, 16) } 
+            }
+        },
+         new Opportunity
+        {
+            Name = "Gro Intelligence",
+            Description = "The AI-powered decision engine across agriculture, climate, and the economy",
+            //Icon = new Icons.Regular.Size24.Leaf(),
+            Details = new List<OpportunityDetail>
+            {
+                new OpportunityDetail { Stage = "Discovery", Amount = 10000, CloseDate = new DateTime(2024, 5, 16) }
+            }
+        }, new Opportunity
+        {
+            Name = "Gro Intelligence",
+            Description = "The AI-powered decision engine across agriculture, climate, and the economy",
+            //Icon = new Icons.Regular.Size24.Leaf(),
+            Details = new List<OpportunityDetail>
+            {
+                new OpportunityDetail { Stage = "Discovery", Amount = 10000, CloseDate = new DateTime(2024, 5, 16) }
+            }
+        },
+        // Add more opportunities...
+    };
+
+    public class Opportunity
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public Icon Icon { get; set; }
+        public List<OpportunityDetail> Details { get; set; }
+    }
+
+    public class OpportunityDetail
+    {
+        public string Stage { get; set; }
+        public decimal Amount { get; set; }
+        public DateTime CloseDate { get; set; }
+    }
+} *@

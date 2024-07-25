@@ -1,0 +1,153 @@
+﻿@page "/weather"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Http
+@using Microsoft.Identity.Abstractions
+@using Microsoft.Identity.Web
+@using System.Security.Claims
+@using Microsoft.Identity.Client;
+@attribute [StreamRendering]
+@rendermode InteractiveWebAssembly
+
+@inject NavigationManager NavigationManager
+@inject ITokenAcquisition TokenAcquisition
+@inject AuthenticationStateProvider Provider
+@inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
+@inject IDownstreamApi downstreamAPI
+@inject GraphApiService service
+
+<PageTitle>Weather</PageTitle>
+
+<h1>Weather</h1>
+
+<p>This component demonstrates showing data.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+
+    private string message = "Loading...";
+    protected override async Task OnInitializedAsync()
+    {
+        AuthenticationState authenticationState =
+        await Provider.GetAuthenticationStateAsync();
+
+        ClaimsPrincipal user = authenticationState.User;
+        string username = user.Identity.Name;
+        string users="";
+        try
+        {
+            //https://graph.microsoft.com/User.Read
+            var accessToken = await TokenAcquisition.GetAccessTokenForUserAsync(new[] { "https://graph.microsoft.com/.default" });
+            // var accessToken1 = await TokenAcquisition.GetAccessTokenForUserAsync(new[] { "api://cf934c96-fd57-430f-94b9-3d15f76dddae/Opportunity.Read" });
+
+            var requestMessage = new HttpRequestMessage();
+
+            requestMessage.Headers.Add("Authorization", $"Bearer {accessToken}");
+
+            // var result = await downstreamAPI.PostForUserAsync<ServicePrincipal>("API",sp , x=> {
+            //     x.RelativePath = ""
+            // });
+
+            // apiResult = await downstreamAPI.CallWebApiAsync("me");
+            // var down = downstreamAPI;
+            // var users = await downstreamAPI.CallApiForUserAsync("DownstreamApi");
+            users = await service.GetUserProfileAsync();
+        }
+        catch (Exception ex)
+        {
+            ConsentHandler.HandleException(ex);
+        }
+        string s = users;
+        // Simulate asynchronous loading to demonstrate streaming rendering
+        await Task.Delay(500);
+
+        var startDate = DateOnly.FromDateTime(DateTime.Now);
+        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        {
+            Date = startDate.AddDays(index),
+            TemperatureC = Random.Shared.Next(-20, 55),
+            Summary = summaries[Random.Shared.Next(summaries.Length)]
+        }).ToArray();
+    }
+
+    // public async Task<ServicePrincipal> ProvisionServicePrincipalAsync(string tenantId)
+    // {
+    //     var accessToken = await _tokenAcquisition.GetAccessTokenForUserAsync(new[] { "https://graph.microsoft.com/.default" });
+
+    //     var result = await _downstreamWebApi.PostForUserAsync<ServicePrincipal>(
+    //         "API",
+    //         new { TenantId = tenantId },
+    //         options =>
+    //         {
+    //             options.RelativePath = "/api/serviceprincipal";
+    //             options.Headers.Add("Authorization", $"Bearer {accessToken}");
+    //         });
+
+    //     return result;
+    // }
+
+    private class WeatherForecast
+    {
+        public DateOnly Date { get; set; }
+        public int TemperatureC { get; set; }
+        public string? Summary { get; set; }
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+
+
+    public class GraphApiService
+    {
+        private readonly IDownstreamApi _downstreamApi;
+
+        public GraphApiService(IDownstreamApi downstreamApi)
+        {
+            _downstreamApi = downstreamApi;
+        }
+
+        public async Task<string> GetUserProfileAsync()
+        {
+           
+                var user = await _downstreamApi.CallApiForUserAsync<string>(
+                 "DownstreamApi",
+                 options => options.RelativePath = "me"
+             );
+                return user;
+            
+            return "";
+
+        }
+    }
+
+}
+
+
+

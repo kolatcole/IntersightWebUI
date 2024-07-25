@@ -1,0 +1,78 @@
+﻿@inherits LayoutComponentBase
+@using Components.Account.Shared
+
+@* <CascadingAuthenticationState>
+    <AuthorizeView>
+        <Authorized> 
+            <a asp-controller="Home" asp-action="Index">Welcome @context.User.Identity?.Name!</a>
+
+            <div class="page">
+                <div>
+                    <NavMenu />
+                </div>
+
+                <main>
+
+
+                    <article class="content px-4">
+                        @Body
+                    </article>
+                </main>
+            </div>
+            <partial name="_LoginPartial" />
+            <div id="blazor-error-ui">
+                An unhandled error has occurred.
+                <a href="" class="reload">Reload</a>
+                <a class="dismiss">🗙</a>
+            </div>
+            <a href="MicrosoftIdentity/Account/SignOut">Logout</a>
+        </Authorized>
+        <NotAuthorized>
+            <a href="MicrosoftIdentity/Account/SignIn">Login</a>
+            <a href="Account/Register">Sign Up</a>
+        </NotAuthorized>
+    </AuthorizeView>
+</CascadingAuthenticationState> *@
+
+@* <PageTitle>Menu</PageTitle>
+<div class="page">
+    <AuthorizeView>
+        <Authorized> 
+             <div class="sidebar">
+                <NavMenu />
+            </div>
+   
+      
+         
+            Hello, @context.User.Identity.Name!
+            <article class="content px-4">
+                @Body
+            </article>
+            <a href="MicrosoftIdentity/Account/SignOut">Sign Out</a>
+        </Authorized>
+        <NotAuthorized>
+            <div class="top-row px-4">
+                <LoginDisplay />
+            </div>
+        </NotAuthorized>
+
+    </AuthorizeView>
+   
+</div> *@
+
+
+<FluentLayout>
+    <NavMenu></NavMenu>
+    <FluentBodyContent>
+        
+        @Body
+    </FluentBodyContent>
+    <FluentFooter>
+
+    </FluentFooter>
+</FluentLayout>
+
+<FluentToastProvider />
+<FluentDialogProvider />
+<FluentTooltipProvider />
+<FluentMessageBarProvider />
